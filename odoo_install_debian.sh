@@ -23,12 +23,12 @@ OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
 OE_ADDONS_PATH="$OE_HOME_EXT/addons,$OE_HOME/custom/addons"
 #The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_WKHTMLTOPDF="True"
+INSTALL_WKHTMLTOPDF="False"
 #Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
 OE_PORT="8069"
 #Choose the Odoo version which you want to install. For example: 10.0, 9.0, 8.0, 7.0 or saas-6. When using 'trunk' the master version will be installed.
 #IMPORTANT! This script contains extra libraries that are specifically needed for Odoo 10.0
-OE_VERSION="10.0"
+OE_VERSION="11.0"
 # Set this to True if you want to install Odoo 10 Enterprise!
 IS_ENTERPRISE="False"
 #set the superadmin password
@@ -39,7 +39,7 @@ OE_CONFIG="${OE_USER}-server"
 OE_PYTHON_ENV="${OE_HOME}/python_env"
 
 #PostgreSQL Version
-OE_POSTGRESQL_VERSION="9.6"
+#OE_POSTGRESQL_VERSION="9.6"
 
 
 
@@ -47,7 +47,7 @@ OE_POSTGRESQL_VERSION="9.6"
 ###  WKHTMLTOPDF download links
 ## === Debian Jessie
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
-WKHTMLTOX_X64=https://nightly.odoo.com/extra/wkhtmltox-0.12.1.2_linux-jessie-amd64.deb
+## TODO WKHTMLTOX_X64=https://nightly.odoo.com/extra/wkhtmltox-0.12.1.2_linux-jessie-amd64.deb
 
 #
 # Install dialog
@@ -68,18 +68,9 @@ apt-get upgrade -y >> ./install_log
 #--------------------------------------------------
 # Install PostgreSQL Server
 #--------------------------------------------------
-# Add official repository
-cat <<EOF > /etc/apt/sources.list.d/pgdg.list
-deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
-EOF
-
-echo -e "\n---- Install PostgreSQL Repo Key ----"
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-
-
-echo -e "\n---- Install PostgreSQL Server ${OE_POSTGRESQL_VERSION} ----"
+echo -e "\n---- Install PostgreSQL Server ----"
 apt-get update >> ./install_log
-apt-get install postgresql-${OE_POSTGRESQL_VERSION} postgresql-server-dev-${OE_POSTGRESQL_VERSION}   -y >> ./install_log
+apt-get install postgresql  -y >> ./install_log
 
 echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
 su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
@@ -87,11 +78,24 @@ su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
 #--------------------------------------------------
 # Install Dependencies
 #--------------------------------------------------
-echo -e "\n---- Install packages ----"
-apt-get install libjpeg-dev curl wget git python-pip gdebi-core python-dev libxml2-dev libxslt1-dev zlib1g-dev libldap2-dev libsasl2-dev node-clean-css node-less python-gevent -y >> ./install_log
+echo -e "\n--- Installing Python 3 + pip3 --"
+apt-get install python3 python3-pip
 
+echo -e "\n---- Install tool packages ----"
+ apt-get install wget git bzr python-pip gdebi-core -y
 
+echo -e "\n---- Install python packages ----"
+apt-get install python-pypdf2 python-dateutil python-feedparser python-ldap python-libxslt1 python-lxml python-mako python-openid python-psycopg2  python-pychart python-pydot python-pyparsing python-reportlab python-simplejson python-tz python-vatnumber python-vobject python-webdav python-werkzeug python-xlwt python-yaml python-zsi python-docutils python-psutil python-mock python-unittest2 python-jinja2 python-pypdf python-decorator python-requests python-passlib python-pil -y
+pip3 install pypdf2 pybabel Babel passlib Werkzeug decorator python-dateutil pyyaml psycopg2 psutil html2text docutils lxml pillow reportlab ninja2 requests gdata XlsxWriter vobject python-openid pyparsing pydot mock mako Jinja2 ebaysdk feedparser xlwt psycogreen suds-jurko pytz pyusb greenlet xlrd 
 
+echo -e "\n---- Install python libraries ----"
+# This is for compatibility with Ubuntu 16.04. Will work on 14.04, 15.04 and 16.04
+apt-get install python3-suds
+
+echo -e "\n--- Install other required packages"
+apt-get install node-clean-css -y
+apt-get install node-less -y
+apt-get install python-gevent -y
 
 #--------------------------------------------------
 # Install Wkhtmltopdf if needed
