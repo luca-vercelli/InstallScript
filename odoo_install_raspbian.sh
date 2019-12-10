@@ -38,9 +38,6 @@ OE_CONFIG="${OE_USER}-server"
 #Python env
 OE_PYTHON_ENV="${OE_HOME}/python_env"
 
-#PostgreSQL Version
-#OE_POSTGRESQL_VERSION="9.6"
-
 
 
 ##
@@ -69,8 +66,7 @@ apt-get upgrade -y >> ./install_log
 # Install PostgreSQL Server
 #--------------------------------------------------
 echo -e "\n---- Install PostgreSQL Server ----"
-apt-get update >> ./install_log
-apt-get install postgresql  -y >> ./install_log
+sudo apt-get install postgresql libpq-dev -y
 
 echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
 su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
@@ -217,14 +213,6 @@ chown $OE_USER:$OE_USER /etc/${OE_CONFIG}.conf
 chmod 640 /etc/${OE_CONFIG}.conf
 
 
-echo -e "\n---- Install python packages and virtualenv ----"
-pip install  virtualenv >> ./install_log
-mkdir $OE_PYTHON_ENV >> ./install_log
-virtualenv $OE_PYTHON_ENV -p /usr/bin/python2.7 >> ./install_log
-source /odoo/python_env/bin/activate && pip install -r $OE_HOME_EXT/requirements.txt >> ./install_log
-deactivate
-
-
 #--------------------------------------------------
 # Adding ODOO as a deamon (initscript)
 #--------------------------------------------------
@@ -239,7 +227,7 @@ After=network.target
 [Service]
 User=odoo
 Group=odoo
-ExecStart=$OE_PYTHON_ENV/bin/python $OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
+ExecStart=$OE_HOME_EXT/odoo-bin --config=/etc/${OE_CONFIG}.conf
 
 
 [Install]
