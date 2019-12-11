@@ -23,7 +23,7 @@ OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
 OE_ADDONS_PATH="$OE_HOME_EXT/addons,$OE_HOME/custom/addons"
 #The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 #Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_WKHTMLTOPDF="False"
+INSTALL_WKHTMLTOPDF="True"
 #Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
 OE_PORT="8069"
 #Choose the Odoo version which you want to install. For example: 10.0, 9.0, 8.0, 7.0 or saas-6. When using 'trunk' the master version will be installed.
@@ -44,7 +44,7 @@ OE_PYTHON_ENV="${OE_HOME}/python_env"
 ###  WKHTMLTOPDF download links
 ## === Debian Jessie
 ## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
-## TODO WKHTMLTOX_X64=https://nightly.odoo.com/extra/wkhtmltox-0.12.1.2_linux-jessie-amd64.deb
+WKHTMLTOX_X64=https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.raspbian.stretch_armhf.deb
 
 #
 # Install dialog
